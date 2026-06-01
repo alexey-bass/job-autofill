@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <h1>Job Application Autofill</h1>
+    <span id="status" class="status"></span>
+  </header>
+
+  <button id="fill" class="primary">Fill this page</button>
+
+  <form id="profile" autocomplete="off">
+    <div class="row two">
+      <label>First name<input id="firstName" type="text" /></label>
+      <label>Last name<input id="lastName" type="text" /></label>
+    </div>
+    <label>Email<input id="email" type="email" /></label>
+    <label>Phone<input id="phone" type="tel" /></label>
+    <label>Location<input id="location" type="text" placeholder="City, Country" /></label>
+    <label>LinkedIn<input id="linkedin" type="url" placeholder="https://linkedin.com/in/you" /></label>
+
+    <details>
+      <summary>Address &amp; links</summary>
+      <label>Street address<input id="address" type="text" /></label>
+      <div class="row two">
+        <label>City<input id="city" type="text" /></label>
+        <label>State / Region<input id="state" type="text" /></label>
+      </div>
+      <div class="row two">
+        <label>ZIP / Postal<input id="zip" type="text" /></label>
+        <label>Country<input id="country" type="text" /></label>
+      </div>
+      <label>GitHub<input id="github" type="url" /></label>
+      <label>Website / Portfolio<input id="website" type="url" /></label>
+    </details>
+  </form>
+
+  <p class="hint">Saved automatically. Shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>. Data stays in your browser.</p>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
