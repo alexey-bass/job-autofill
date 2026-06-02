@@ -3,6 +3,20 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.3.0] - 2026-06-02
+
+### Added
+- Pierce **shadow DOM** when scanning for fields, so forms built as web components
+  are now found.
+- Diagnostic popup message: when nothing matches, it reports how many fields were
+  scanned ("No match (saw N fields)") vs. none found at all.
+
+### Changed
+- Added the `<all_urls>` host permission and inject into **all frames**, so the
+  filler can reach forms inside cross-origin application iframes (e.g.
+  SmartRecruiters). It still runs only when you click "Fill this page" and sends
+  nothing off your device.
+
 ## [1.2.0] - 2026-06-02
 
 ### Added

@@ -57,8 +57,12 @@ async function fillActivePage() {
       func: fillForms,
       args: [profile],
     });
-    const count = results.reduce((n, r) => n + (r.result || 0), 0);
-    flash(count ? `Filled ${count} field${count === 1 ? '' : 's'}` : 'No matching fields', !count);
+    const sum = (k) => results.reduce((n, r) => n + ((r.result && r.result[k]) || 0), 0);
+    const filled = sum('filled');
+    const scanned = sum('scanned');
+    if (filled) flash(`Filled ${filled} field${filled === 1 ? '' : 's'}`);
+    else if (!scanned) flash('No form fields found here', true);
+    else flash(`No match (saw ${scanned} fields)`, true);
   } catch (err) {
     flash('Cannot fill this page', true);
   }

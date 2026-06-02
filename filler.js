@@ -149,11 +149,19 @@ export function fillForms(profile) {
     return true;
   }
 
+  // Collect all fields, descending into shadow DOM — web-component forms hide
+  // their inputs inside shadow roots, where document.querySelectorAll can't reach.
+  function collectFields(root, acc) {
+    acc = acc || [];
+    try { for (const n of root.querySelectorAll('input, textarea, select')) acc.push(n); } catch (e) { /* */ }
+    try { for (const el of root.querySelectorAll('*')) if (el.shadowRoot) collectFields(el.shadowRoot, acc); } catch (e) { /* */ }
+    return acc;
+  }
+
   // ---- scan the form once to understand its name layout ----
-  const entries = Array.from(document.querySelectorAll('input, textarea, select'))
-    .map(function (el) {
-      return { el: el, sig: signals(el), type: (el.getAttribute('type') || '').toLowerCase() };
-    });
+  const entries = collectFields(document).map(function (el) {
+    return { el: el, sig: signals(el), type: (el.getAttribute('type') || '').toLowerCase() };
+  });
 
   // Does the form split the name into separate fields? If a dedicated
   // surname/last-name field exists, then a field labelled merely "Name"
@@ -215,5 +223,5 @@ export function fillForms(profile) {
       }
     }
   }
-  return filled;
+  return { filled: filled, scanned: entries.length };
 }
