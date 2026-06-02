@@ -3,6 +3,20 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.4.0] - 2026-06-02
+
+### Changed
+- **On-click access by default**: dropped the `<all_urls>` host permission and rely
+  on `activeTab`, so the extension can only read or change a page after you click
+  "Fill this page". It still injects into same-origin frames and pierces shadow DOM.
+
+### Added
+- GitHub repository link in the extension description, and a `homepage_url`.
+
+### Note
+- A form served inside a *cross-origin* iframe may be unreachable under on-click
+  access. If a site stops filling, broad host access can be re-enabled.
+
 ## [1.3.0] - 2026-06-02
 
 ### Added

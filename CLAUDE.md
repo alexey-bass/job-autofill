@@ -26,8 +26,9 @@ There is no background service worker (the keyboard shortcut was removed in 1.2.
 ## How `filler.js` works
 
 `fillForms(profile)` is serialized and injected via `chrome.scripting.executeScript`
-into **all frames** (to reach embedded iframes), so it must stay **fully
-self-contained** — no references to anything outside its own body. It:
+into all reachable frames of the active tab — the extension uses on-click `activeTab`
+access (top frame + same-origin iframes) — so it must stay **fully self-contained**
+(no references to anything outside its own body). It:
 
 - collects `input`/`textarea`/`select`, descending into **shadow DOM**;
 - builds a signal string per field from autocomplete, type, name, id, placeholder,

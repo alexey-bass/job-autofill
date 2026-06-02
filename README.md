@@ -26,9 +26,9 @@ GitHub, website/portfolio.
 It matches each form field using its `autocomplete` attribute, input `type`,
 `name`/`id`, placeholder, `aria-label`, linked `<label>` text, and — when no label
 is linked to the input — the nearest preceding label text. It also fills
-matching `<select>` dropdowns (e.g. country). It reaches inside embedded application
-iframes (Greenhouse, Lever, SmartRecruiters, …) and shadow-DOM / web-component forms.
-Labels in **English or Polish** are recognized (Imię, Nazwisko, Telefon, Miasto, Kraj, …).
+matching `<select>` dropdowns (e.g. country), same-origin embedded frames, and
+shadow-DOM / web-component forms. Labels in **English or Polish** are recognized
+(Imię, Nazwisko, Telefon, Miasto, Kraj, …).
 
 **Smart name handling:** if the form has a separate surname field (e.g. *Name* +
 *Surname*, or *Imię* + *Nazwisko*), a field labelled just "Name" gets your **first
@@ -41,9 +41,10 @@ form before submitting — matching is heuristic and not every site is covered.
 ## Privacy
 
 Your data never leaves your browser. There are no network requests and no analytics.
-Permissions: `storage` (save your profile), plus `scripting` + `activeTab` + host access
-(`<all_urls>`) so the filler can run in the page **and any embedded application iframe** —
-but only when you click **Fill this page**, and it sends nothing off your device.
+Permissions: `storage` (save your profile) and `activeTab` + `scripting`. The extension
+uses **on-click access** — it can read or change a page only **after you click "Fill this
+page"** on that tab, and it sends nothing off your device. (A form hosted in a *cross-origin*
+iframe may be out of reach under on-click access; if a site won't fill, open an issue.)
 
 ## Customize
 
