@@ -112,5 +112,12 @@ run('H) Fields inside shadow DOM', [], { sfn: 'Aleks', sem: 'test@example.com' }
   new Field({ id: 'sfn', label: 'First name' }), new Field({ id: 'sem', type: 'email', label: 'Email' }),
 ]);
 
+// I) job-application forms: field identifiers/headings contain "job", which must
+// NOT disqualify the first name (regression for the reply.com report).
+run('I) job-application field names (job in identifier)', [
+  new Field({ id: 'fn', name: 'jobApplication.firstName' }),
+  new Field({ id: 'ln', name: 'jobApplication.lastName' }),
+], { fn: 'Aleks', ln: 'Bass' });
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

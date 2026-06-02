@@ -3,6 +3,14 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.4.1] - 2026-06-02
+
+### Fixed
+- First name was not filled on job-application forms whose field identifiers,
+  headings, or URL contain "job" (e.g. `jobApplication.firstName`). Removed `job`
+  from the first-name / full-name exclusion lists — it was never protective, since
+  a "Job title" field matches no name keyword anyway. Regression test added.
+
 ## [1.4.0] - 2026-06-02
 
 ### Changed

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Job Application Autofill",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "One-click autofill for job application forms — name, email, phone, location, LinkedIn. Source: https://github.com/alexey-bass/job-autofill",
   "homepage_url": "https://github.com/alexey-bass/job-autofill",
   "permissions": ["storage", "scripting", "activeTab"],

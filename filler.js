@@ -183,14 +183,14 @@ export function fillForms(profile) {
       kw: ['first name', 'firstname', 'first_name', 'given name', 'givenname', 'forename', 'imię', 'imie']
         .concat(splitName ? ['name'] : []),
       neg: ['last', 'sur', 'surname', 'family', 'full', 'middle', 'maiden', 'company',
-        'user', 'file', 'display', 'event', 'nick', 'screen', 'job', 'nazwisko'] },
+        'user', 'file', 'display', 'event', 'nick', 'screen', 'nazwisko'] },
     { value: fullName, auto: ['name'],
       // when the name is split, never let the generic "name" token grab a field here
       kw: splitName
         ? ['full name', 'fullname', 'full_name', 'legal name', 'complete name', 'whole name']
         : ['full name', 'fullname', 'your name', 'legal name', 'name'],
       neg: ['first', 'last', 'sur', 'user', 'company', 'file', 'middle', 'nick',
-        'screen', 'maiden', 'event', 'field', 'display', 'job', 'nazwisko'] },
+        'screen', 'maiden', 'event', 'field', 'display', 'nazwisko'] },
     { value: profile.address, auto: ['street-address', 'address-line1'],
       kw: ['street', 'address line', 'address', 'addr', 'adres'], neg: ['email', 'e-mail', 'ip ', 'url', 'web'] },
     { value: profile.city, auto: ['address-level2'],
