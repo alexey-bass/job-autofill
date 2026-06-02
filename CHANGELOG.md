@@ -3,6 +3,21 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.2.0] - 2026-06-02
+
+### Added
+- Nearby-label detection: fields whose visible label isn't linked to the input
+  via `for=`/wrapping/`aria-*` (common in React-based ATS forms) are now matched
+  by the closest preceding label text.
+
+### Changed
+- Removed the `Alt+Shift+F` keyboard shortcut, the background service worker, and
+  the `commands` permission. Fill via the popup's **Fill this page** button.
+
+### Fixed
+- Popup now shows "Add your details first" when the profile is empty, instead of
+  the misleading "No matching fields".
+
 ## [1.1.0] - 2026-06-01
 
 ### Added

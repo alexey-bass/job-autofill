@@ -31,6 +31,26 @@ export function fillForms(profile) {
     return text;
   }
 
+  // Fallback for forms whose visible label isn't linked to the input via
+  // for=/wrapping/aria (common in React-based ATS forms): grab the nearest
+  // preceding text that isn't itself a field container.
+  function nearbyText(el) {
+    let node = el;
+    for (let depth = 0; depth < 4 && node; depth++) {
+      let prev = node.previousElementSibling;
+      while (prev) {
+        const hasControl = prev.querySelector && prev.querySelector('input, select, textarea, button');
+        if (!hasControl) {
+          const t = (prev.textContent || '').replace(/\*/g, '').trim();
+          if (t && t.length <= 60) return t;
+        }
+        prev = prev.previousElementSibling;
+      }
+      node = node.parentElement;
+    }
+    return '';
+  }
+
   function signals(el) {
     return [
       el.name,
@@ -40,6 +60,7 @@ export function fillForms(profile) {
       el.getAttribute('autocomplete'),
       el.getAttribute('data-test') || el.getAttribute('data-testid'),
       labelText(el),
+      nearbyText(el),
     ].filter(Boolean).join(' ').toLowerCase();
   }
 

@@ -14,8 +14,7 @@ job application forms with one click — name, email, phone, location, and more.
 
 1. Click the extension icon and fill in your details. They save automatically
    (in `chrome.storage.sync`, so they follow your Chrome sign-in across devices).
-2. On any job application page, click **Fill this page** — or press
-   **Alt + Shift + F** to fill without opening the popup.
+2. On any job application page, click **Fill this page**.
 3. The popup reports how many fields were filled.
 
 ## What it fills
@@ -25,7 +24,8 @@ Optional (under **Address & links**): street, city, state/region, ZIP, country,
 GitHub, website/portfolio.
 
 It matches each form field using its `autocomplete` attribute, input `type`,
-`name`/`id`, placeholder, `aria-label`, and visible `<label>` text. It also fills
+`name`/`id`, placeholder, `aria-label`, linked `<label>` text, and — when no label
+is linked to the input — the nearest preceding label text. It also fills
 matching `<select>` dropdowns (e.g. country). It works inside embedded application
 iframes (Greenhouse, Lever, etc.). Labels in **English or Polish** are recognized
 (Imię, Nazwisko, Telefon, Miasto, Kraj, …).
@@ -42,14 +42,12 @@ form before submitting — matching is heuristic and not every site is covered.
 
 Your data never leaves your browser. There are no network requests and no analytics.
 Permissions used: `storage` (save your profile), `activeTab` + `scripting` (inject the
-filler into the current tab only when you click Fill or press the shortcut).
+filler into the current tab only when you click Fill).
 
 ## Customize
 
 - **Add a field:** add an `<input>` in `popup.html`, add its id to `FIELDS` in
   `popup.js`, and add a rule (value + keywords) to the `rules` array in `filler.js`.
-- **Change the shortcut:** edit `commands` in `manifest.json`, or rebind it at
-  `chrome://extensions/shortcuts`.
 - **Regenerate icons:** `node generate-icons.js`.
 
 ## Files
@@ -59,7 +57,6 @@ filler into the current tab only when you click Fill or press the shortcut).
 | `manifest.json` | Extension config (MV3) |
 | `popup.html/.css/.js` | Profile editor + "Fill this page" button |
 | `filler.js` | Self-contained field-matching/fill logic injected into the page |
-| `background.js` | Handles the Alt+Shift+F keyboard shortcut |
 | `generate-icons.js` | Regenerates the PNG icons (no dependencies) |
 | `package.json` | Project metadata + version (synced with `manifest.json`) |
 | `CHANGELOG.md` | Version history |

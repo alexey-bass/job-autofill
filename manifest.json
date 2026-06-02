@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Job Application Autofill",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Fill your name, email, phone, and location into job application forms with one click.",
   "permissions": ["storage", "scripting", "activeTab"],
   "action": {
@@ -17,15 +17,5 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
-  "commands": {
-    "fill-form": {
-      "suggested_key": { "default": "Alt+Shift+F" },
-      "description": "Fill the current page with your profile"
-    }
   }
 }

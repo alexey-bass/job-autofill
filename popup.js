@@ -41,6 +41,11 @@ async function saveProfile() {
 
 async function fillActivePage() {
   const { profile = {} } = await chrome.storage.sync.get('profile');
+  const hasData = Object.values(profile).some((v) => v && String(v).trim());
+  if (!hasData) {
+    flash('Add your details first', true);
+    return;
+  }
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab || !tab.id) {
     flash('No active tab', true);
