@@ -30,6 +30,15 @@ matching `<select>` dropdowns (e.g. country), same-origin embedded frames, and
 shadow-DOM / web-component forms. Labels in **English or Polish** are recognized
 (Imię, Nazwisko, Telefon, Miasto, Kraj, …).
 
+It also sets the phone **country code** (the dial-code flag) on forms that use the
+[intl-tel-input](https://github.com/jackocnr/intl-tel-input) widget, such as
+Greenhouse job boards — matched from your profile **country** (by English country
+name or ISO code), so fill that in for the flag to be set.
+
+**Not yet supported:** custom JavaScript dropdowns built as *react-select*
+comboboxes (e.g. Greenhouse's separate "Country" field) can't be filled from the
+page and are skipped — choose those manually.
+
 **Smart name handling:** if the form has a separate surname field (e.g. *Name* +
 *Surname*, or *Imię* + *Nazwisko*), a field labelled just "Name" gets your **first
 name**. If there's only a single name field, it gets your **full name**.

@@ -4,15 +4,19 @@ import { fillForms } from '../filler.js';
 
 globalThis.CSS = { escape: (s) => s };
 globalThis.Event = class { constructor(t) { this.type = t; } };
+globalThis.MouseEvent = class { constructor(t, o) { this.type = t; Object.assign(this, o); } };
 globalThis.window = { getComputedStyle: () => ({ visibility: 'visible', opacity: '1' }) };
 
 let LIGHT = [];
 let SHADOW = [];
+let ITIS = []; // mock intl-tel-input .iti containers (phone country picker)
 globalThis.document = {
   querySelectorAll: (sel) =>
-    sel === '*'
-      ? (SHADOW.length ? [{ shadowRoot: { querySelectorAll: (s) => (s === '*' ? [] : SHADOW) } }] : [])
-      : LIGHT,
+    sel === '.iti'
+      ? ITIS
+      : sel === '*'
+        ? (SHADOW.length ? [{ shadowRoot: { querySelectorAll: (s) => (s === '*' ? [] : SHADOW) } }] : [])
+        : LIGHT,
   querySelector: (sel) => {
     const m = sel.match(/label\[for="(.+)"\]/);
     if (m) { const f = [...LIGHT, ...SHADOW].find((x) => x.id === m[1] && x._label); return f ? { textContent: f._label } : null; }
@@ -27,7 +31,10 @@ class Field {
     this._type = o.type || 'text';
     this.name = o.name || '';
     this.id = o.id || '';
-    this._attrs = { placeholder: o.placeholder || '', 'aria-label': o.ariaLabel || '', autocomplete: o.autocomplete || '' };
+    this._attrs = {
+      placeholder: o.placeholder || '', 'aria-label': o.ariaLabel || '', autocomplete: o.autocomplete || '',
+      role: o.role || '', 'aria-haspopup': o.ariaHaspopup || '', 'aria-autocomplete': o.ariaAutocomplete || '',
+    };
     this._label = o.label || '';
     this._value = o.value || '';
     this.disabled = false;
@@ -118,6 +125,50 @@ run('I) job-application field names (job in identifier)', [
   new Field({ id: 'fn', name: 'jobApplication.firstName' }),
   new Field({ id: 'ln', name: 'jobApplication.lastName' }),
 ], { fn: 'Aleks', ln: 'Bass' });
+
+// J) intl-tel-input phone country code (Greenhouse): the dial-code flag is a
+// vanilla-JS widget. The country isn't typed — the dropdown is opened and the
+// <li> matching the profile country is clicked.
+function itiItem(name, code) {
+  return {
+    _name: name, _clicked: false,
+    querySelector: (s) => (s === '.iti__country-name' ? { textContent: name } : null),
+    getAttribute: (k) => (k === 'data-country-code' ? code : null),
+    get textContent() { return name + '+0'; },
+    dispatchEvent(e) { if (e.type === 'click') this._clicked = true; return true; },
+  };
+}
+function itiMock(items) {
+  const btn = { _clicked: false, dispatchEvent(e) { if (e.type === 'click') this._clicked = true; return true; } };
+  const list = { querySelectorAll: (s) => (s === '.iti__country' ? items : []) };
+  return {
+    _btn: btn, _items: items,
+    querySelector: (s) => (s === '.iti__selected-country' ? btn : s === '.iti__country-list' ? list : null),
+  };
+}
+(function phoneCountryTest() {
+  LIGHT = []; SHADOW = [];
+  const de = itiItem('Germany', 'de'), pl = itiItem('Polska', 'pl'), us = itiItem('United States', 'us');
+  const iti = itiMock([de, pl, us]);
+  ITIS = [iti];
+  fillForms(PROFILE); // country: 'Polska'
+  ITIS = [];
+  if (pl._clicked && iti._btn._clicked && !de._clicked && !us._clicked) {
+    pass++; console.log('✓ J) intl-tel-input: opens dropdown and selects matching country');
+  } else {
+    fail++; console.log(`✗ J) intl-tel-input (btn:${iti._btn._clicked} de:${de._clicked} pl:${pl._clicked} us:${us._clicked})`);
+  }
+})();
+
+// K) react-select combobox can't be filled from a content script, so it must be
+// skipped — not left with stray search text (and not counted as filled).
+(function comboboxSkipTest() {
+  const combo = new Field({ id: 'country', label: 'Country', role: 'combobox', ariaHaspopup: 'true', ariaAutocomplete: 'list' });
+  LIGHT = [combo]; SHADOW = []; ITIS = [];
+  fillForms(PROFILE);
+  if (combo._value === '') { pass++; console.log('✓ K) react-select combobox is skipped, not filled'); }
+  else { fail++; console.log(`✗ K) react-select combobox: got "${combo._value}", want ""`); }
+})();
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

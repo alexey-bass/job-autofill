@@ -3,6 +3,22 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.5.0] - 2026-06-15
+
+### Added
+- Fill the phone **country code** (the dial-code flag) on forms that use the
+  [intl-tel-input](https://github.com/jackocnr/intl-tel-input) widget, e.g.
+  Greenhouse job boards. The country is matched from your profile **country** (by
+  English country name or ISO code), so set it for the flag to fill. Verified on
+  a live Greenhouse application form.
+
+### Changed
+- react-select comboboxes (Greenhouse's "Country" field and similar) are now
+  **skipped** instead of being typed into and counted as filled. They can't be
+  filled from a content script — the widget ignores synthetic input/keyboard
+  events and treats any value as a transient search filter it discards — so
+  reporting them as filled was misleading. Pick those manually for now.
+
 ## [1.4.1] - 2026-06-02
 
 ### Fixed

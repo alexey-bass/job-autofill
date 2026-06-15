@@ -149,6 +149,65 @@ export function fillForms(profile) {
     return true;
   }
 
+  // react-select-style comboboxes — an <input role="combobox"> backed by a popup
+  // list with no <option> markup (e.g. Greenhouse's "Country" field). Setting a
+  // value doesn't stick: the widget treats it as a transient search filter and
+  // ignores synthetic input/keyboard events, so it can't be filled from a content
+  // script. We detect them only to SKIP them, so they aren't counted as "filled"
+  // while actually staying empty.
+  function isCombobox(el) {
+    if (el.tagName.toLowerCase() !== 'input') return false;
+    if (el.getAttribute('role') !== 'combobox') return false;
+    return !!(el.getAttribute('aria-haspopup') || el.getAttribute('aria-autocomplete'));
+  }
+
+  function clickAll(el) {
+    ['mousedown', 'mouseup', 'click'].forEach(function (t) {
+      el.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true }));
+    });
+  }
+
+  function collectItis(root, acc) {
+    acc = acc || [];
+    try { for (const n of root.querySelectorAll('.iti')) acc.push(n); } catch (e) { /* */ }
+    try { for (const el of root.querySelectorAll('*')) if (el.shadowRoot) collectItis(el.shadowRoot, acc); } catch (e) { /* */ }
+    return acc;
+  }
+
+  // intl-tel-input: the phone field's country / dial-code picker (the "+48" flag,
+  // e.g. on Greenhouse). It's a vanilla-JS widget — a `.iti` container holding a
+  // `.iti__selected-country` button and a `.iti__country-list` of `<li>` options —
+  // and unlike react-select it does respond to synthetic clicks. The list only
+  // commits a click while the dropdown is open, so we open it first, then click
+  // the option matching the profile country (by name or ISO code). The match is
+  // against the form's country names (English on the Greenhouse form), so a
+  // profile country in another language won't match. Returns how many were set.
+  function fillPhoneCountry(value) {
+    const want = String(value).toLowerCase().trim();
+    if (!want) return 0;
+    let count = 0;
+    for (const iti of collectItis(document)) {
+      const btn = iti.querySelector('.iti__selected-country');
+      const list = iti.querySelector('.iti__country-list');
+      if (!btn || !list) continue;
+      const items = list.querySelectorAll('.iti__country');
+      const nameOf = function (li) {
+        const n = li.querySelector('.iti__country-name');
+        return ((n ? n.textContent : li.textContent) || '').toLowerCase().trim();
+      };
+      let pick = null;
+      for (const li of items) {
+        if (nameOf(li) === want || (li.getAttribute('data-country-code') || '').toLowerCase() === want) { pick = li; break; }
+      }
+      if (!pick) for (const li of items) { const t = nameOf(li); if (t && t.indexOf(want) !== -1) { pick = li; break; } }
+      if (!pick) continue;
+      clickAll(btn);  // open the dropdown so the list accepts the click
+      clickAll(pick); // select the country
+      count++;
+    }
+    return count;
+  }
+
   // Collect all fields, descending into shadow DOM — web-component forms hide
   // their inputs inside shadow roots, where document.querySelectorAll can't reach.
   function collectFields(root, acc) {
@@ -215,6 +274,7 @@ export function fillForms(profile) {
   let filled = 0;
   for (const entry of entries) {
     if (!isFillable(entry.el)) continue;
+    if (isCombobox(entry.el)) continue; // JS-driven popup widget; setting its value won't stick
     for (const rule of rules) {
       if (!rule.value) continue;
       if (matchesRule(entry.sig, entry.type, rule)) {
@@ -223,5 +283,8 @@ export function fillForms(profile) {
       }
     }
   }
+  // The phone country / dial-code picker (intl-tel-input) is a separate widget,
+  // not a plain field — drive it directly from the profile country.
+  if (profile.country) filled += fillPhoneCountry(profile.country);
   return { filled: filled, scanned: entries.length };
 }

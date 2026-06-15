@@ -36,6 +36,13 @@ access (top frame + same-origin iframes) — so it must stay **fully self-contai
 - matches against an ordered `rules` array (English + Polish keywords), with smart
   first-name-vs-full-name detection based on whether a separate surname field exists;
 - fills only empty, visible fields; React/Vue-safe via the native value setter;
+- sets the phone **country code** on `intl-tel-input` widgets (`.iti` + a
+  `.iti__selected-country` button + `.iti__country-list`) by clicking the button to
+  open the dropdown, then clicking the `<li>` matching `profile.country` (English
+  name or ISO code) — these respond to synthetic clicks, react-select does not;
+- **skips** react-select comboboxes (`<input role="combobox" aria-haspopup …>`,
+  e.g. Greenhouse's "Country" field): they ignore synthetic input/keyboard events
+  and discard any typed value, so they can't be filled from a content script;
 - returns `{ filled, scanned }` for the popup's status message.
 
 ## Validate before committing
