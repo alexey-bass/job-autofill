@@ -270,11 +270,38 @@ export function fillForms(profile) {
       neg: ['linkedin', 'github', 'company'] },
   ];
 
+  // The autocomplete attribute is the unambiguous HTML-standard hint for what a
+  // field holds; when present, trust it over the keyword/substring guesses. This
+  // matters when a keyword leaks from a compound name/id — e.g. ASP.NET WebForms
+  // (Elevato) wraps every personal-data field in one container named
+  // "…FirstNameLastNameEmail…", so the substrings first/last/email appear in
+  // EVERY field's name+id. Keyword matching then misfires (the email rule's
+  // substring match grabs all of them; the name rules self-reject on their neg
+  // list), but each field still declares a correct autocomplete value. We match
+  // only against the attribute itself (not the polluted full signal), in rule
+  // priority order, ignoring rules with no autocomplete tokens.
+  function autoRule(el) {
+    const ac = (el.getAttribute('autocomplete') || '').toLowerCase().trim();
+    if (!ac || ac === 'off' || ac === 'on') return null;
+    for (const rule of rules) {
+      if (!rule.value || !rule.auto.length) continue;
+      if (rule.auto.some(function (a) {
+        return new RegExp('\\b' + a.replace(/-/g, '\\-') + '\\b').test(ac);
+      })) return rule;
+    }
+    return null;
+  }
+
   // ---- run ----
   let filled = 0;
   for (const entry of entries) {
     if (!isFillable(entry.el)) continue;
     if (isCombobox(entry.el)) continue; // JS-driven popup widget; setting its value won't stick
+    const ac = autoRule(entry.el);
+    if (ac) {
+      if (fillField(entry.el, ac.value)) filled++;
+      continue;
+    }
     for (const rule of rules) {
       if (!rule.value) continue;
       if (matchesRule(entry.sig, entry.type, rule)) {

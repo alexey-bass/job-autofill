@@ -23,9 +23,11 @@ Core: first name, last name, email, phone, location, LinkedIn.
 Optional (under **Address & links**): street, city, state/region, ZIP, country,
 GitHub, website/portfolio.
 
-It matches each form field using its `autocomplete` attribute, input `type`,
-`name`/`id`, placeholder, `aria-label`, linked `<label>` text, and — when no label
-is linked to the input — the nearest preceding label text. It also fills
+It matches each form field by its `autocomplete` attribute first (the unambiguous
+HTML hint, so it stays correct even when a field's `name`/`id` is a noisy
+machine-generated string), then falls back to the input `type`, `name`/`id`,
+placeholder, `aria-label`, linked `<label>` text, and — when no label is linked to
+the input — the nearest preceding label text. It also fills
 matching `<select>` dropdowns (e.g. country), same-origin embedded frames, and
 shadow-DOM / web-component forms. Labels in **English or Polish** are recognized
 (Imię, Nazwisko, Telefon, Miasto, Kraj, …).

@@ -3,6 +3,18 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.5.1] - 2026-06-15
+
+### Fixed
+- The email address was filled into the **First name**, **Last name** and
+  **phone** fields (instead of just email) on Elevato / ASP.NET WebForms job
+  forms. Those forms wrap every personal-data field in one container named
+  `…FirstNameLastNameEmail…`, so the substrings `first`/`last`/`email` leak into
+  every field's `name`/`id`, and the email rule's substring match claimed them
+  all. The filler now trusts a field's `autocomplete` attribute
+  (`given-name`/`family-name`/`email`/`tel`/…) over keyword guesses when present.
+  Reported on a live Elevato (`itfs.elevato.net`) application form.
+
 ## [1.5.0] - 2026-06-15
 
 ### Added

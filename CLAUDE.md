@@ -35,6 +35,12 @@ access (top frame + same-origin iframes) — so it must stay **fully self-contai
   aria-label, the linked `<label>`, and the nearest preceding label text;
 - matches against an ordered `rules` array (English + Polish keywords), with smart
   first-name-vs-full-name detection based on whether a separate surname field exists;
+- **trusts a field's `autocomplete` attribute first** (matched against each rule's
+  `auto` tokens, before the keyword scan): it's the unambiguous HTML-standard hint
+  and avoids keyword leakage from compound `name`/`id`s — e.g. Elevato/ASP.NET
+  WebForms wrap every personal-data field in one container named
+  `…FirstNameLastNameEmail…`, so `first`/`last`/`email` appear in every field's
+  identifiers and the substring-based email rule would otherwise claim them all;
 - fills only empty, visible fields; React/Vue-safe via the native value setter;
 - sets the phone **country code** on `intl-tel-input` widgets (`.iti` + a
   `.iti__selected-country` button + `.iti__country-list`) by clicking the button to

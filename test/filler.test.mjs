@@ -126,6 +126,19 @@ run('I) job-application field names (job in identifier)', [
   new Field({ id: 'ln', name: 'jobApplication.lastName' }),
 ], { fn: 'Aleks', ln: 'Bass' });
 
+// L) Elevato / ASP.NET WebForms: every field lives in one container named
+// "...FirstNameLastNameEmail...", so the substrings first/last/email leak into
+// every field's name+id. Keyword matching then misfires (the email rule's
+// substring match grabs all four, and the name rules self-reject on their neg
+// list), but each field has a correct autocomplete attribute that must win.
+const ELEVATO = 'ctl00$Survey1$ctl01$JobOffersCandidatesFirstNameLastNameEmailFE1$';
+run('L) ASP.NET compound name → trust autocomplete', [
+  new Field({ id: 'fn', name: ELEVATO + 'TxtFirstName', autocomplete: 'given-name', label: 'Imię' }),
+  new Field({ id: 'ln', name: ELEVATO + 'TxtLastName', autocomplete: 'family-name', label: 'Nazwisko' }),
+  new Field({ id: 'em', name: ELEVATO + 'TxtEmail', autocomplete: 'email', label: 'Adres e-mail' }),
+  new Field({ id: 'ph', name: ELEVATO + 'TxtCellPhone', autocomplete: 'tel', label: 'Telefon komórkowy' }),
+], { fn: 'Aleks', ln: 'Bass', em: 'test@example.com', ph: '5551234567' });
+
 // J) intl-tel-input phone country code (Greenhouse): the dial-code flag is a
 // vanilla-JS widget. The country isn't typed — the dropdown is opened and the
 // <li> matching the profile country is clicked.
