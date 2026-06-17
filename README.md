@@ -43,7 +43,9 @@ page and are skipped — choose those manually.
 
 **Smart name handling:** if the form has a separate surname field (e.g. *Name* +
 *Surname*, or *Imię* + *Nazwisko*), a field labelled just "Name" gets your **first
-name**. If there's only a single name field, it gets your **full name**.
+name**. If there's only a single name field, it gets your **full name** — including
+a single combined field that asks for both at once (e.g. *First name, Last name* or
+*Imię i nazwisko*).
 
 Safe by default: it only fills **empty, visible** fields, so it won't overwrite
 anything you've typed or trip hidden anti-bot honeypot fields. Always review the

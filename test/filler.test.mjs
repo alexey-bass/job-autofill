@@ -139,6 +139,19 @@ run('L) ASP.NET compound name → trust autocomplete', [
   new Field({ id: 'ph', name: ELEVATO + 'TxtCellPhone', autocomplete: 'tel', label: 'Telefon komórkowy' }),
 ], { fn: 'Aleks', ln: 'Bass', em: 'test@example.com', ph: '5551234567' });
 
+// M) Single combined "First name, Last name" field (people.andersenlab.com):
+// one input whose placeholder names BOTH parts. The split first/last rules each
+// self-reject (placeholder has "last" / "first"); it must get the full name.
+run('M) combined "First name, Last name" → full name', [
+  new Field({ id: 'name', name: 'name', placeholder: 'First name, Last name*' }),
+  new Field({ id: 'email', type: 'email', placeholder: 'E-mail*' }),
+], { name: 'Aleks Bass', email: 'test@example.com' });
+
+// N) Polish single combined "Imię i nazwisko" field → full name (not just surname).
+run('N) combined "Imię i nazwisko" → full name', [
+  new Field({ id: 'name', name: 'name', label: 'Imię i nazwisko' }),
+], { name: 'Aleks Bass' });
+
 // J) intl-tel-input phone country code (Greenhouse): the dial-code flag is a
 // vanilla-JS widget. The country isn't typed — the dropdown is opened and the
 // <li> matching the profile country is clicked.

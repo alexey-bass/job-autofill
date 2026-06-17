@@ -35,6 +35,14 @@ access (top frame + same-origin iframes) — so it must stay **fully self-contai
   aria-label, the linked `<label>`, and the nearest preceding label text;
 - matches against an ordered `rules` array (English + Polish keywords), with smart
   first-name-vs-full-name detection based on whether a separate surname field exists;
+- fills a **single combined first+last name field** (`COMBINED_NAME_RE`) with the
+  full name — one input whose signal carries both a first- and a last-name cue
+  separated by a real delimiter, e.g. Andersen's `placeholder="First name, Last
+  name"` or the Polish "Imię i nazwisko". Without this it matched no rule (the
+  first/last rules each self-reject on the other's keyword, the full-name rule's
+  neg list bails on first/last). The required delimiter distinguishes it from
+  ASP.NET compound container names (`…FirstNameLastNameEmail…`, handled via
+  `autocomplete`); such a combined field is also excluded from the split-name check;
 - **trusts a field's `autocomplete` attribute first** (matched against each rule's
   `auto` tokens, before the keyword scan): it's the unambiguous HTML-standard hint
   and avoids keyword leakage from compound `name`/`id`s — e.g. Elevato/ASP.NET

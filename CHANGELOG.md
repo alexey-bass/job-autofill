@@ -3,6 +3,18 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.5.2] - 2026-06-17
+
+### Fixed
+- A single combined **"First name, Last name"** field (one input that asks for
+  the whole name at once) was left empty. Because the placeholder names *both*
+  parts, the first-name and last-name rules each self-rejected (each part is on
+  the other rule's negative list) and the full-name rule bailed too. The filler
+  now recognises a combined first+last field — both cues present, separated by a
+  real delimiter (so it isn't confused with ASP.NET `…FirstNameLastNameEmail…`
+  container names) — and fills it with the full name. Also covers the Polish
+  "Imię i nazwisko". Reported on a live `people.andersenlab.com` application form.
+
 ## [1.5.1] - 2026-06-15
 
 ### Fixed

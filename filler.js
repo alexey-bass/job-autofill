@@ -222,11 +222,27 @@ export function fillForms(profile) {
     return { el: el, sig: signals(el), type: (el.getAttribute('type') || '').toLowerCase() };
   });
 
-  // Does the form split the name into separate fields? If a dedicated
-  // surname/last-name field exists, then a field labelled merely "Name"
-  // means the FIRST name, not the full name.
   const LAST_RE = /(sur\s*name|last\s*name|last[_-]?name|family\s*name|family[_-]?name|\blname\b|nazwisko)/;
-  const splitName = entries.some(function (e) { return LAST_RE.test(e.sig); });
+  const FIRST_RE = /(first\s*name|first[_-]?name|given\s*name|given[_-]?name|forename|fore\s*name|\bfname\b|imię|imie)/;
+
+  // A single field that asks for the WHOLE name at once — e.g. one input with
+  // placeholder "First name, Last name" (people.andersenlab.com's ATS) or the
+  // Polish "Imię i nazwisko". Its signal carries BOTH a first- and a last-name
+  // cue, so the split-name rules below each self-reject (the first-name rule
+  // sees "last", the last-name rule sees "first") and the generic full-name
+  // rule's neg list also bails on first/last — leaving the field unfilled. We
+  // detect it and fill the full name. The required delimiter (comma / slash /
+  // & / "and" / whitespace) between the two cues is what tells this apart from
+  // ASP.NET-style compound container names like "…FirstNameLastNameEmail…"
+  // (Elevato), which concatenate the tokens with no separator and are handled
+  // via the autocomplete attribute instead.
+  const COMBINED_NAME_RE = /(first\s*(name)?[\s,/&]+(and\s+)?last\s*name|imi[ęe][\s,/&]+(i\s+)?nazwisko)/;
+
+  // Does the form split the name into separate fields? If a dedicated
+  // surname/last-name field exists — one that is NOT itself a combined
+  // first+last field — then a field labelled merely "Name" means the FIRST
+  // name, not the full name.
+  const splitName = entries.some(function (e) { return LAST_RE.test(e.sig) && !FIRST_RE.test(e.sig); });
 
   // ---- field rules, ordered by priority (first match wins per field) ----
   const rules = [
@@ -300,6 +316,12 @@ export function fillForms(profile) {
     const ac = autoRule(entry.el);
     if (ac) {
       if (fillField(entry.el, ac.value)) filled++;
+      continue;
+    }
+    // A single combined "First name, Last name" field wants the whole name; the
+    // split first/last rules below would each self-reject it (see COMBINED_NAME_RE).
+    if (fullName && COMBINED_NAME_RE.test(entry.sig)) {
+      if (fillField(entry.el, fullName)) filled++;
       continue;
     }
     for (const rule of rules) {
