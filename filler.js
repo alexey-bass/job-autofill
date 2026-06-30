@@ -86,6 +86,7 @@ export function fillForms(profile) {
 
   function matchesRule(sig, type, rule) {
     if (rule.neg.some(function (n) { return sig.indexOf(n) !== -1; })) return false;
+    if (rule.negRe && rule.negRe.test(sig)) return false;
     if (rule.types && type && rule.types.indexOf(type) !== -1) return true;
     if (rule.auto.some(function (a) {
       return new RegExp('\\b' + a.replace(/-/g, '\\-') + '\\b').test(sig);
@@ -238,6 +239,18 @@ export function fillForms(profile) {
   // via the autocomplete attribute instead.
   const COMBINED_NAME_RE = /(first\s*(name)?[\s,/&]+(and\s+)?last\s*name|imi[ęe][\s,/&]+(i\s+)?nazwisko)/;
 
+  // Secondary address lines — "Address Line 2/3", "Address 2" — hold apartment /
+  // suite / extra data the saved profile doesn't store (it keeps one street
+  // address). Without this, the address rule's broad "address"/"address line"
+  // keywords match every numbered line and the street value gets duplicated into
+  // all of them. We reject any address/line token directly followed by a digit
+  // ≥ 2 (allowing space / underscore / hyphen separators, so "address line 2",
+  // "addr_line_2" and "address-line2" all match) — leaving only the first line
+  // (no number, or "1") to be filled. The standard city autocomplete
+  // "address-level2" is safe: "address" isn't immediately followed by the digit
+  // and there's no "line" token.
+  const SECONDARY_ADDRESS_RE = /(?:address[\s_-]*line|address|line)[\s_-]*[2-9]/;
+
   // Does the form split the name into separate fields? If a dedicated
   // surname/last-name field exists — one that is NOT itself a combined
   // first+last field — then a field labelled merely "Name" means the FIRST
@@ -267,7 +280,8 @@ export function fillForms(profile) {
       neg: ['first', 'last', 'sur', 'user', 'company', 'file', 'middle', 'nick',
         'screen', 'maiden', 'event', 'field', 'display', 'nazwisko'] },
     { value: profile.address, auto: ['street-address', 'address-line1'],
-      kw: ['street', 'address line', 'address', 'addr', 'adres'], neg: ['email', 'e-mail', 'ip ', 'url', 'web'] },
+      kw: ['street', 'address line', 'address', 'addr', 'adres'],
+      neg: ['email', 'e-mail', 'ip ', 'url', 'web'], negRe: SECONDARY_ADDRESS_RE },
     { value: profile.city, auto: ['address-level2'],
       kw: ['city', 'town', 'suburb', 'miasto', 'locality'], neg: [] },
     { value: profile.state, auto: ['address-level1'],

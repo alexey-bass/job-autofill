@@ -49,6 +49,12 @@ access (top frame + same-origin iframes) — so it must stay **fully self-contai
   WebForms wrap every personal-data field in one container named
   `…FirstNameLastNameEmail…`, so `first`/`last`/`email` appear in every field's
   identifiers and the substring-based email rule would otherwise claim them all;
+- fills only the **first address line**: secondary lines ("Address Line 2/3",
+  "Address 2", …) are rejected via the address rule's `negRe`
+  (`SECONDARY_ADDRESS_RE` — any `address`/`line` token directly followed by a
+  digit ≥ 2, separators `_`/`-`/space allowed) so the single saved street address
+  isn't duplicated into every line. (`negRe` is the rule-level regex counterpart
+  to the substring `neg` list, checked in `matchesRule`.)
 - fills only empty, visible fields; React/Vue-safe via the native value setter;
 - sets the phone **country code** on `intl-tel-input` widgets (`.iti` + a
   `.iti__selected-country` button + `.iti__country-list`) by clicking the button to

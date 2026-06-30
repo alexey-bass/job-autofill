@@ -47,6 +47,10 @@ name**. If there's only a single name field, it gets your **full name** — incl
 a single combined field that asks for both at once (e.g. *First name, Last name* or
 *Imię i nazwisko*).
 
+**Address:** only the first line (street) is filled. Secondary lines (*Address
+Line 2*, *Address Line 3*, …) hold apartment/suite details the profile doesn't
+store, so they're left empty rather than getting the street duplicated into them.
+
 Safe by default: it only fills **empty, visible** fields, so it won't overwrite
 anything you've typed or trip hidden anti-bot honeypot fields. Always review the
 form before submitting — matching is heuristic and not every site is covered.

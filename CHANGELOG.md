@@ -3,6 +3,18 @@
 All notable changes are documented here. The version lives in `manifest.json` and
 `package.json`; bump it and add an entry here on every change.
 
+## [1.5.3] - 2026-06-30
+
+### Fixed
+- The saved street address was duplicated into **every** address line: on a form
+  with "House No. & Street Name", "Address Line 2" and "Address Line 3", all three
+  received the same value. The address rule's broad `address`/`address line`
+  keywords matched every numbered line. The filler now recognises secondary
+  address lines — any `address`/`line` token directly followed by a digit ≥ 2
+  (e.g. "Address Line 2", `addr_line_2`, `address-line2`) — and leaves them empty,
+  so only the first line (the street) is filled. The standard `address-level2`
+  city autocomplete is unaffected.
+
 ## [1.5.2] - 2026-06-17
 
 ### Fixed

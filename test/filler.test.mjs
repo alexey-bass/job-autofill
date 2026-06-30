@@ -67,7 +67,7 @@ function labelless(o) {
 const PROFILE = {
   firstName: 'Aleks', lastName: 'Bass',
   email: 'test@example.com', phone: '5551234567',
-  city: 'Testowo', country: 'Polska', location: '',
+  address: 'Testowa 1', city: 'Testowo', country: 'Polska', location: '',
   linkedin: 'https://linkedin.com/in/aleks', website: 'https://aleks.dev',
 };
 
@@ -151,6 +151,24 @@ run('M) combined "First name, Last name" → full name', [
 run('N) combined "Imię i nazwisko" → full name', [
   new Field({ id: 'name', name: 'name', label: 'Imię i nazwisko' }),
 ], { name: 'Aleks Bass' });
+
+// O) Secondary address lines: only the first line (the street) is filled. The
+// extra "Address Line 2/3" fields hold apartment/suite data the profile lacks,
+// so they must stay empty instead of getting the street duplicated into them.
+// Mirrors the reported form: line 1 fills via autocomplete; lines 2/3 carry a
+// digit ≥ 2 and are rejected (whether matched by keyword or autocomplete).
+run('O) only the first address line is filled', [
+  new Field({ id: 'a1', name: 'addressLine1', autocomplete: 'address-line1', label: 'House No. & Street Name' }),
+  new Field({ id: 'a2', name: 'addressLine2', autocomplete: 'address-line2', label: 'Address Line 2' }),
+  new Field({ id: 'a3', name: 'addressLine3', autocomplete: 'address-line3', label: 'Address Line 3' }),
+], { a1: 'Testowa 1', a2: '', a3: '' });
+
+// P) Keyword path with separator-laden names: a plain street field fills, while a
+// numbered second line (no autocomplete, underscore-separated name) stays empty.
+run('P) numbered address line via keyword stays empty', [
+  new Field({ id: 's', name: 'street_address', label: 'Street address' }),
+  new Field({ id: 'l2', name: 'addr_line_2', label: 'Address line 2' }),
+], { s: 'Testowa 1', l2: '' });
 
 // J) intl-tel-input phone country code (Greenhouse): the dial-code flag is a
 // vanilla-JS widget. The country isn't typed — the dropdown is opened and the
